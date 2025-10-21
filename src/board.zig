@@ -32,17 +32,20 @@ pub fn initBoard(dims: dimensions) ![]Cell {
 
 // Print the board on the screen
 pub fn printBoard(board: []Cell, dims: dimensions) void {
-    var counter: u8 = 1;
-    // Print the top line:
-    for (0..dims.cols+1) |i|{
-        if (i == 0) {
-            print("┌─", .{});
-        } else if (i == dims.cols) {
-            print("──┐\n", .{});
-        } else {
-            print("──┬─", .{});
-        }
+    var letter: u8 = 'a';
+    var counter: u64 = dims.rows;
+
+    // Print letter
+    for (0..dims.cols) |_| {
+        print("  {c} ", .{letter});
+        letter = letter + 0x01;
     }
+    
+    print("\n", .{});
+
+    // Print the top line:
+    print_top(dims);
+
     for (0..dims.cols*dims.rows) |i| {
         print("│ {c} ", .{cell_to_str(board[i])});
 
@@ -52,20 +55,44 @@ pub fn printBoard(board: []Cell, dims: dimensions) void {
             if ((i/dims.cols) == dims.rows - 1) {
                 continue;
             }
-            for (0..dims.cols+1) |j|{
-                if (j == 0) {
-                    print("├─", .{});
-                } else if (j == dims.cols) {
-                    print("──┤\n", .{});
-                } else {
-                    print("──┼─", .{});
-                }
-            }
-            counter = counter + 1;
+            // Print middle line
+            print_mid(dims);
+            counter = counter - 1;
         }
     }
 
     // Print bottom line
+    print_bot(dims);
+}
+
+// Prints the top-most line of the board
+fn print_top(dims: dimensions) void {
+    for (0..dims.cols+1) |i|{
+        if (i == 0) {
+            print("┌─", .{});
+        } else if (i == dims.cols) {
+            print("──┐\n", .{});
+        } else {
+            print("──┬─", .{});
+        }
+    }
+}
+
+// Prints a middle line in between cell rows
+fn print_mid(dims: dimensions) void {
+    for (0..dims.cols+1) |i|{
+        if (i == 0) {
+            print("├─", .{});
+        } else if (i == dims.cols) {
+            print("──┤\n", .{});
+        } else {
+            print("──┼─", .{});
+        }
+    }
+}
+
+// Prints the bottom-most line of the board
+fn print_bot(dims: dimensions) void {
     for (0..dims.cols+1) |i|{
         if (i == 0) {
             print("└─", .{});
