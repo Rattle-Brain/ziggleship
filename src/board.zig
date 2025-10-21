@@ -2,10 +2,7 @@ const std = @import("std");
 const gpa = @import("std").heap.page_allocator;
 const print = std.debug.print;
 
-pub const dimensions = struct {
-    rows: usize,
-    cols: usize
-};
+pub const dimensions = struct { rows: usize, cols: usize };
 
 const Cell = enum(u8) {
     Empty,
@@ -17,9 +14,9 @@ const Cell = enum(u8) {
 fn cell_to_str(c: Cell) u8 {
     return switch (c) {
         .Empty => ' ',
-        .Ship  => 'S',
-        .Hit   => 'X',
-        .Miss  => '·',
+        .Ship => 'S',
+        .Hit => 'X',
+        .Miss => '·',
     };
 }
 
@@ -40,19 +37,19 @@ pub fn printBoard(board: []Cell, dims: dimensions) void {
         print("  {c} ", .{letter});
         letter = letter + 0x01;
     }
-    
+
     print("\n", .{});
 
     // Print the top line:
     print_top(dims);
 
-    for (0..dims.cols*dims.rows) |i| {
+    for (0..dims.cols * dims.rows) |i| {
         print("│ {c} ", .{cell_to_str(board[i])});
 
         // Print mid separator line
-        if((i+1) % dims.cols == 0){
+        if ((i + 1) % dims.cols == 0) {
             print("│ {d}\n", .{counter});
-            if ((i/dims.cols) == dims.rows - 1) {
+            if ((i / dims.cols) == dims.rows - 1) {
                 continue;
             }
             // Print middle line
@@ -67,7 +64,7 @@ pub fn printBoard(board: []Cell, dims: dimensions) void {
 
 // Prints the top-most line of the board
 fn print_top(dims: dimensions) void {
-    for (0..dims.cols+1) |i|{
+    for (0..dims.cols + 1) |i| {
         if (i == 0) {
             print("┌─", .{});
         } else if (i == dims.cols) {
@@ -80,7 +77,7 @@ fn print_top(dims: dimensions) void {
 
 // Prints a middle line in between cell rows
 fn print_mid(dims: dimensions) void {
-    for (0..dims.cols+1) |i|{
+    for (0..dims.cols + 1) |i| {
         if (i == 0) {
             print("├─", .{});
         } else if (i == dims.cols) {
@@ -93,7 +90,7 @@ fn print_mid(dims: dimensions) void {
 
 // Prints the bottom-most line of the board
 fn print_bot(dims: dimensions) void {
-    for (0..dims.cols+1) |i|{
+    for (0..dims.cols + 1) |i| {
         if (i == 0) {
             print("└─", .{});
         } else if (i == dims.cols) {
