@@ -4,12 +4,14 @@ const print = std.debug.print;
 
 pub const dimensions = struct { rows: usize, cols: usize };
 
-const Cell = enum(u8) {
+pub const Cell = enum(u8) {
     Empty,
     Ship,
     Hit,
     Miss,
 };
+
+var Board: []Cell = undefined;
 
 fn cell_to_str(c: Cell) u8 {
     return switch (c) {
@@ -22,9 +24,13 @@ fn cell_to_str(c: Cell) u8 {
 
 // Initialize the board just with dots. It stores the info as a 1D array
 pub fn initBoard(dims: dimensions) ![]Cell {
-    const board: []Cell = try gpa.alloc(Cell, dims.rows * dims.cols);
-    @memset(board, Cell.Empty);
-    return board;
+    Board = try gpa.alloc(Cell, dims.rows * dims.cols);
+    @memset(Board, Cell.Empty);
+    return Board;
+}
+
+pub fn getBoard() []Cell {
+    return Board;
 }
 
 // Print the board on the screen
