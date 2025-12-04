@@ -1,6 +1,7 @@
 const std = @import("std");
 const battleship = @import("battleship");
 const boardModule = @import("board.zig");
+const shipModule = @import("ship.zig");
 
 pub fn main() !void {
     const dims = boardModule.dimensions {
@@ -8,8 +9,32 @@ pub fn main() !void {
         .cols = 10,
     };
 
+    const ship1 = shipModule.Ship {
+        .rotation = false,
+        .size = 3
+    };
+
+    const ship2 = shipModule.Ship {
+        .rotation = true,
+        .size = 4
+    };
+
+    const ship3 = shipModule.Ship {
+        .rotation = true,
+        .size = 4
+    };
+
     const board = try boardModule.initBoard(dims);
-    defer std.heap.page_allocator.free(board);
+    defer {
+        for (board) |row| {
+            std.heap.page_allocator.free(row);
+        }
+        std.heap.page_allocator.free(board);
+    }
+
+    shipModule.putShip(board, dims, ship1);
+    shipModule.putShip(board, dims, ship2);
+    shipModule.putShip(board, dims, ship3);
 
     boardModule.printBoard(board, dims);
 }

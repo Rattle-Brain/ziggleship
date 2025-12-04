@@ -11,7 +11,7 @@ pub const Cell = enum(u8) {
     Miss,
 };
 
-var Board: []Cell = undefined;
+var Board: [][]Cell = undefined;
 
 fn cell_to_str(c: Cell) u8 {
     return switch (c) {
@@ -22,19 +22,22 @@ fn cell_to_str(c: Cell) u8 {
     };
 }
 
-// Initialize the board just with dots. It stores the info as a 1D array
-pub fn initBoard(dims: dimensions) ![]Cell {
-    Board = try gpa.alloc(Cell, dims.rows * dims.cols);
-    @memset(Board, Cell.Empty);
+// Initialize the board as a 2D array (matrix)
+pub fn initBoard(dims: dimensions) ![][]Cell {
+    Board = try gpa.alloc([]Cell, dims.rows);
+    for (0..dims.rows) |i| {
+        Board[i] = try gpa.alloc(Cell, dims.cols);
+        @memset(Board[i], Cell.Empty);
+    }
     return Board;
 }
 
-pub fn getBoard() []Cell {
+pub fn getBoard() [][]Cell {
     return Board;
 }
 
 // Print the board on the screen
-pub fn printBoard(board: []Cell, dims: dimensions) void {
+pub fn printBoard(board: [][]Cell, dims: dimensions) void {
     var letter: u8 = 'a';
     var counter: u64 = dims.rows;
 
@@ -49,19 +52,17 @@ pub fn printBoard(board: []Cell, dims: dimensions) void {
     // Print the top line:
     print_top(dims);
 
-    for (0..dims.cols * dims.rows) |i| {
-        print("│ {c} ", .{cell_to_str(board[i])});
-
-        // Print mid separator line
-        if ((i + 1) % dims.cols == 0) {
-            print("│ {d}\n", .{counter});
-            if ((i / dims.cols) == dims.rows - 1) {
-                continue;
-            }
-            // Print middle line
-            print_mid(dims);
-            counter = counter - 1;
+    for (0..dims.rows) |row| {
+        for (0..dims.cols) |col| {
+            print("│ {c} ", .{cell_to_str(board[row][col])});
         }
+        print("│ {d}\n", .{counter});
+
+        // Print middle line (except after the last row)
+        if (row < dims.rows - 1) {
+            print_mid(dims);
+        }
+        counter = counter - 1;
     }
 
     // Print bottom line

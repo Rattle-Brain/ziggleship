@@ -2,53 +2,82 @@ const boardModule = @import("board.zig");
 const DefaultPrng = @import("std").Random.DefaultPrng;
 const std = @import("std");
 
-const Ship = struct {
+pub const Ship = struct {
     size: u8,
     rotation: bool      // false=horizontal, true=vertical
 };
 
-fn putShip(board: []boardModule.Cell, dims: boardModule.dimensions, ship: Ship) void {
-    var initialRow: u8 = randomize();
-    var initialCol: u8 = randomize();
+pub fn putShip(board: [][]boardModule.Cell, dims: boardModule.dimensions, ship: Ship) void {
+    var initialRow: u8 = randomize(dims.rows);
+    var initialCol: u8 = randomize(dims.cols);
     while (true) {
         if(ship.rotation){
-            if(initialPosition + ship.size >= dims.rows){
-                initialRow = randomize();
-                initialCol = randomize();
+            std.debug.print("Row: {d}\n", .{initialRow});
+            std.debug.print("Column: {d}\n\n", .{initialCol});
+            // Vertical placement
+            if(initialRow + ship.size >= dims.rows){
+                initialRow = randomize(dims.rows);
+                initialCol = randomize(dims.cols);
             } else {
-                break;
+                if (checkAvailability(initialRow, initialCol, ship, board)){
+                    for(0..ship.size) |i| {
+                        board[initialRow + i][initialCol] = boardModule.Cell.Ship;
+                    }
+                    break;
+                }
+                initialRow = randomize(dims.rows);
+                initialCol = randomize(dims.cols);
             }
         } else {
-            if(initialPosition + ship.size >= dims.cols){
-                initialRow = randomize();
-                initialCol = randomize();
+            // Horizontal placement
+            if(initialCol + ship.size >= dims.cols){
+                initialRow = randomize(dims.rows);
+                initialCol = randomize(dims.cols);
             } else {
-                break;
+                if (checkAvailability(initialRow, initialCol, ship, board)){
+                    for(0..ship.size) |i| {
+                        board[initialRow][initialCol + i] = boardModule.Cell.Ship;
+                    }
+                    break;
+                }
+                initialRow = randomize(dims.rows);
+                initialCol = randomize(dims.cols);
             }
         }
     }
-
-    if(ship.rotation){
-        for(0..ship.size) |i| {
-            board[i] = boardModule.Cell.Ship;
-        }
-    }
-     
-
 }
  
-fn checkAvailability() void {
-    
+fn checkAvailability(initRow:u8, initCol:u8, ship:Ship, board:[][]boardModule.Cell) bool {
+    const size: usize = ship.size;
+    const rotation: bool = ship.rotation;
+
+    if (rotation) {
+        for (0..size) |i| {
+            if (board[initRow + i] [initCol] != boardModule.Cell.Empty) {
+                return false;
+            }
+        }
+    } else {
+        for (0..size) |i| {
+            if (board[initRow] [initCol + i] != boardModule.Cell.Empty) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
-fn randomize() u8 {
+fn randomize(max: usize) u8 {
     var prng = DefaultPrng.init(blk: {
         var seed: u64 = undefined;
-        try std.posix.getrandom(std.mem.asBytes(&seed));
+        std.posix.getrandom(std.mem.asBytes(&seed)) catch {
+            // Fallback value if function fails.
+            seed = 0xDEADBEEFCAFEBABE;
+        };
         break :blk seed;
     });
 
     var rand = prng.random();
-
-    return rand.int(u8);
+    const limited_max: u8 = @intCast(@min(max, std.math.maxInt(u8)));
+    return rand.intRangeAtMost(u8, 0, limited_max-1);
 }
