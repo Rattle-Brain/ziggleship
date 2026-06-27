@@ -4,25 +4,16 @@ const boardModule = @import("board.zig");
 const shipModule = @import("ship.zig");
 
 pub fn main() !void {
-    const dims = boardModule.dimensions {
+    const dims = boardModule.dimensions{
         .rows = 10,
         .cols = 10,
     };
 
-    const ship1 = shipModule.Ship {
-        .rotation = false,
-        .size = 3
-    };
+    const ship1 = shipModule.Ship{ .rotation = false, .size = 3 };
 
-    const ship2 = shipModule.Ship {
-        .rotation = true,
-        .size = 4
-    };
+    const ship2 = shipModule.Ship{ .rotation = true, .size = 4 };
 
-    const ship3 = shipModule.Ship {
-        .rotation = true,
-        .size = 4
-    };
+    const ship3 = shipModule.Ship{ .rotation = true, .size = 4 };
 
     const board = try boardModule.initBoard(dims);
     defer {

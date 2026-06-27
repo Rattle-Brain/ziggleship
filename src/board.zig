@@ -13,7 +13,7 @@ pub const Cell = enum(u8) {
 
 var Board: [][]Cell = undefined;
 
-fn cell_to_str(c: Cell) u8 {
+fn cellToStr(c: Cell) u8 {
     return switch (c) {
         .Empty => ' ',
         .Ship => 'S',
@@ -50,27 +50,27 @@ pub fn printBoard(board: [][]Cell, dims: dimensions) void {
     print("\n", .{});
 
     // Print the top line:
-    print_top(dims);
+    printTop(dims);
 
     for (0..dims.rows) |row| {
         for (0..dims.cols) |col| {
-            print("│ {c} ", .{cell_to_str(board[row][col])});
+            print("│ {c} ", .{cellToStr(board[row][col])});
         }
         print("│ {d}\n", .{counter});
 
         // Print middle line (except after the last row)
         if (row < dims.rows - 1) {
-            print_mid(dims);
+            printMid(dims);
         }
         counter = counter - 1;
     }
 
     // Print bottom line
-    print_bot(dims);
+    printBot(dims);
 }
 
 // Prints the top-most line of the board
-fn print_top(dims: dimensions) void {
+fn printTop(dims: dimensions) void {
     for (0..dims.cols + 1) |i| {
         if (i == 0) {
             print("┌─", .{});
@@ -83,7 +83,7 @@ fn print_top(dims: dimensions) void {
 }
 
 // Prints a middle line in between cell rows
-fn print_mid(dims: dimensions) void {
+fn printMid(dims: dimensions) void {
     for (0..dims.cols + 1) |i| {
         if (i == 0) {
             print("├─", .{});
@@ -96,7 +96,7 @@ fn print_mid(dims: dimensions) void {
 }
 
 // Prints the bottom-most line of the board
-fn print_bot(dims: dimensions) void {
+fn printBot(dims: dimensions) void {
     for (0..dims.cols + 1) |i| {
         if (i == 0) {
             print("└─", .{});
